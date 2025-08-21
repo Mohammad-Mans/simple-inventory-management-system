@@ -13,4 +13,5 @@ public class Inventory
         }
         return false;
     }
+    public IReadOnlyList<Product> GetProducts() => _products;
 }
