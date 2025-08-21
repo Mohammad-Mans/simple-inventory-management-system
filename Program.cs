@@ -84,10 +84,13 @@ internal class Program
             Console.WriteLine("Invalid quantity. Please enter a non-negative integer.");
         }
 
-        bool success = inventory.AddProduct(name, price, quantity);
-
-        Console.WriteLine(success ? "Product added successfully" : "Failed to add product.");
+        bool success = inventory.AddProduct(name, price, quantity, out var error);
+        if (success)
+            Console.WriteLine("Product added successfully.");
+        else
+            Console.WriteLine($"Failed to add product. {error}");
     }
+
 
     public static void ViewAllProducts(Inventory inventory)
     {

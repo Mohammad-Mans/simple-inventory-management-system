@@ -4,15 +4,41 @@ public class Inventory
 {
     private List<Product> _products = new();
 
-    public bool AddProduct(string name, decimal price, int quantity)
+    public bool AddProduct(string name, decimal price, int quantity, out string? error)
     {
-        if (!string.IsNullOrEmpty(name) && price >= 0 && quantity >= 0)
+        error = null;
+
+        if (string.IsNullOrWhiteSpace(name))
         {
-            _products.Add(new Product(name, price, quantity));
-            return true;
+            error = "Name must be non-empty.";
+            return false;
         }
 
-        return false;
+        if (price < 0)
+        {
+            error = "Price must be non-negative.";
+            return false;
+        }
+
+        if (quantity < 0)
+        {
+            error = "Quantity must be non-negative.";
+            return false;
+        }
+
+        var trimmed = name.Trim();
+
+        foreach (var p in _products)
+        {
+            if (string.Equals(p.Name, trimmed, StringComparison.OrdinalIgnoreCase))
+            {
+                error = "A product with that name already exists.";
+                return false;
+            }
+        }
+
+        _products.Add(new Product(trimmed, price, quantity));
+        return true;
     }
 
     public IReadOnlyList<Product> GetProducts() => _products;
