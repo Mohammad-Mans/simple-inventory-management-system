@@ -32,6 +32,10 @@ internal class Program
                     DeleteProduct(inventory);
                     break;
 
+                case "5":
+                    SearchProduct(inventory);
+                    break;
+
                 default:
                     Console.WriteLine("Invalid option. Try again.");
                     break;
@@ -48,6 +52,7 @@ internal class Program
         Console.WriteLine("2) View all products");
         Console.WriteLine("3) Edit a product");
         Console.WriteLine("4) Delete a product");
+        Console.WriteLine("5) Search for a product");
         Console.WriteLine("0) Exit");
     }
 
@@ -177,5 +182,27 @@ internal class Program
 
         bool success = inventory.DeleteProduct(name, out var error);
         Console.WriteLine(success ? "Product deleted successfully." : $"Failed to delete product. {error}");
+    }
+
+    private static void SearchProduct(Inventory inventory)
+    {
+        Console.Write("Enter the product name to search: ");
+        var name = (Console.ReadLine() ?? "").Trim();
+
+        if (string.IsNullOrWhiteSpace(name))
+        {
+            Console.WriteLine("Invalid name. Please enter a non-empty product name.");
+            return;
+        }
+
+        if (inventory.FindByName(name, out var product))
+        {
+            Console.WriteLine("Name | Price | Quantity");
+            Console.WriteLine($"{product!.Name} | {product.Price} | {product.Quantity}");
+        }
+        else
+        {
+            Console.WriteLine("Product not found.");
+        }
     }
 }
