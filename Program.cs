@@ -58,17 +58,7 @@ internal class Program
 
     public static void AddProduct(Inventory inventory)
     {
-        string name;
-        while (true)
-        {
-            Console.Write("Enter product name: ");
-            name = Console.ReadLine() ?? "";
-
-            if (!string.IsNullOrWhiteSpace(name))
-                break;
-
-            Console.WriteLine("Invalid name. Please enter a non-empty product name.");
-        }
+        string name = ReadNonEmpty("Enter product name: ");
 
         decimal price;
         while (true)
@@ -119,10 +109,8 @@ internal class Program
 
     private static void EditProduct(Inventory inventory)
     {
-        Console.Write("Enter the product name to edit: ");
-        var targetName = Console.ReadLine() ?? "";
-        if (string.IsNullOrWhiteSpace(targetName) ||
-            !inventory.FindByName(targetName, out var product))
+        var targetName = ReadNonEmpty("Enter the product name to edit: ");
+        if (!inventory.FindByName(targetName, out var product))
         {
             Console.WriteLine("Not found.");
             return;
@@ -171,29 +159,14 @@ internal class Program
 
     private static void DeleteProduct(Inventory inventory)
     {
-        Console.Write("Enter the product name to delete: ");
-        var name = Console.ReadLine() ?? "";
-
-        if (string.IsNullOrWhiteSpace(name))
-        {
-            Console.WriteLine("Invalid name. Please enter a non-empty product name.");
-            return;
-        }
-
+        var name = ReadNonEmpty("Enter the product name to delete: ");
         bool success = inventory.DeleteProduct(name, out var error);
         Console.WriteLine(success ? "Product deleted successfully." : $"Failed to delete product. {error}");
     }
 
     private static void SearchProduct(Inventory inventory)
     {
-        Console.Write("Enter the product name to search: ");
-        var name = (Console.ReadLine() ?? "").Trim();
-
-        if (string.IsNullOrWhiteSpace(name))
-        {
-            Console.WriteLine("Invalid name. Please enter a non-empty product name.");
-            return;
-        }
+        var name = ReadNonEmpty("Enter the product name to search: ");
 
         if (inventory.FindByName(name, out var product))
         {
@@ -203,6 +176,17 @@ internal class Program
         else
         {
             Console.WriteLine("Product not found.");
+        }
+    }
+
+    static string ReadNonEmpty(string prompt)
+    {
+        while (true)
+        {
+            Console.Write(prompt);
+            var s = Console.ReadLine() ?? "";
+            if (!string.IsNullOrWhiteSpace(s)) return s.Trim();
+            Console.WriteLine("Invalid input. Please enter a non-empty value.");
         }
     }
 }
