@@ -28,6 +28,10 @@ internal class Program
                     EditProduct(inventory);
                     break;
 
+                case "4":
+                    DeleteProduct(inventory);
+                    break;
+
                 default:
                     Console.WriteLine("Invalid option. Try again.");
                     break;
@@ -43,6 +47,7 @@ internal class Program
         Console.WriteLine("1) Add product");
         Console.WriteLine("2) View all products");
         Console.WriteLine("3) Edit a product");
+        Console.WriteLine("4) Delete a product");
         Console.WriteLine("0) Exit");
     }
 
@@ -157,5 +162,20 @@ internal class Program
 
         bool success = inventory.EditProduct(product, newName, newPrice, newQty, out var error);
         Console.WriteLine(success ? "Product edited successfully." : $"Failed to edit product. {error}");
+    }
+
+    private static void DeleteProduct(Inventory inventory)
+    {
+        Console.Write("Enter the product name to delete: ");
+        var name = Console.ReadLine() ?? "";
+
+        if (string.IsNullOrWhiteSpace(name))
+        {
+            Console.WriteLine("Invalid name. Please enter a non-empty product name.");
+            return;
+        }
+
+        bool success = inventory.DeleteProduct(name, out var error);
+        Console.WriteLine(success ? "Product deleted successfully." : $"Failed to delete product. {error}");
     }
 }

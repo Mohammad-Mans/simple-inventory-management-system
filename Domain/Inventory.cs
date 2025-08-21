@@ -110,4 +110,28 @@ public class Inventory
 
         return true;
     }
+
+    public bool DeleteProduct(string name, out string? error)
+    {
+        error = null;
+
+        if (string.IsNullOrWhiteSpace(name))
+        {
+            error = "Name must be non-empty.";
+            return false;
+        }
+        
+        for (int i = 0; i < _products.Count; i++)
+        {
+            var p = _products[i];
+            if (string.Equals(p.Name, name, StringComparison.OrdinalIgnoreCase))
+            {
+                _products.RemoveAt(i);
+                return true;
+            }
+        }
+
+        error = "Product not found.";
+        return false;
+    }
 }
