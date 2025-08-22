@@ -59,26 +59,8 @@ internal class Program
     private static void AddProduct(Inventory inventory)
     {
         var name = ReadNonEmpty("Enter product name: ");
-
-        var price = 0m;
-        while (true)
-        {
-            Console.Write("Enter price: ");
-            var input = Console.ReadLine();
-
-            if (decimal.TryParse(input, out price) && price >= 0) break;
-            Console.WriteLine("Invalid price. Please enter a non-negative number.");
-        }
-
-        var quantity = 0;
-        while (true)
-        {
-            Console.Write("Enter quantity: ");
-            var input = Console.ReadLine();
-
-            if (int.TryParse(input, out quantity) && quantity >= 0) break;
-            Console.WriteLine("Invalid quantity. Please enter a non-negative integer.");
-        }
+        var price = ReadNonNegativeDecimal("Enter price: ");
+        var quantity = ReadNonNegativeInt("Enter quantity: ");
 
         try
         {
@@ -173,6 +155,28 @@ internal class Program
             var s = Console.ReadLine() ?? "";
             if (!string.IsNullOrWhiteSpace(s)) return s.Trim();
             Console.WriteLine("Invalid input. Please enter a non-empty value.");
+        }
+    }
+
+    private static decimal ReadNonNegativeDecimal(string prompt)
+    {
+        while (true)
+        {
+            Console.Write($"{prompt}");
+            var s = Console.ReadLine();
+            if (decimal.TryParse(s, out var v) && v >= 0) return v;
+            Console.WriteLine("Invalid. Please enter a non-negative decimal.");
+        }
+    }
+
+    private static int ReadNonNegativeInt(string prompt)
+    {
+        while (true)
+        {
+            Console.Write($"{prompt}");
+            var s = Console.ReadLine();
+            if (int.TryParse(s, out var v) && v >= 0) return v;
+            Console.WriteLine("Invalid. Please enter a non-negative integer.");
         }
     }
 
