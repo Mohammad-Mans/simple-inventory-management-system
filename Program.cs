@@ -58,37 +58,38 @@ internal class Program
 
     public static void AddProduct(Inventory inventory)
     {
-        string name = ReadNonEmpty("Enter product name: ");
+        var name = ReadNonEmpty("Enter product name: ");
 
-        decimal price;
+        var price = 0m;
         while (true)
         {
             Console.Write("Enter price: ");
-            string? input = Console.ReadLine();
+            var input = Console.ReadLine();
 
-            if (decimal.TryParse(input, out price) && price >= 0)
-                break;
-
+            if (decimal.TryParse(input, out price) && price >= 0) break;
             Console.WriteLine("Invalid price. Please enter a non-negative number.");
         }
 
-        int quantity;
+        var quantity = 0;
         while (true)
         {
             Console.Write("Enter quantity: ");
-            string? input = Console.ReadLine();
+            var input = Console.ReadLine();
 
-            if (int.TryParse(input, out quantity) && quantity >= 0)
-                break;
-
+            if (int.TryParse(input, out quantity) && quantity >= 0) break;
             Console.WriteLine("Invalid quantity. Please enter a non-negative integer.");
         }
 
-        bool success = inventory.AddProduct(name, price, quantity, out var error);
-        if (success)
-            Console.WriteLine("Product added successfully.");
-        else
-            Console.WriteLine($"Failed to add product. {error}");
+        try
+        {
+            var addedProduct = inventory.AddProduct(name, price, quantity);
+            Console.WriteLine(
+                $"Product added successfully:\nName: {addedProduct.Name}, Price: {addedProduct.Price}, Quantity: {addedProduct.Quantity}");
+        }
+        catch (InventoryException ex)
+        {
+            Console.WriteLine($"Failed to add product. {ex.Message}");
+        }
     }
 
 
@@ -100,7 +101,7 @@ internal class Program
         else
         {
             Console.WriteLine("Name | Price | Quantity");
-            foreach (Product p in items)
+            foreach (var p in items)
             {
                 Console.WriteLine($"{p.Name} | {p.Price} | {p.Quantity}");
             }
@@ -121,9 +122,9 @@ internal class Program
 
         Console.Write($"New name [{product.Name}]: ");
         var nameInput = Console.ReadLine();
-        string? newName = string.IsNullOrWhiteSpace(nameInput) ? null : nameInput.Trim();
+        var newName = string.IsNullOrWhiteSpace(nameInput) ? null : nameInput.Trim();
 
-        decimal? newPrice = null;
+        var newPrice = (decimal?)null;
         while (true)
         {
             Console.Write($"New price [{product.Price}]: ");
@@ -138,7 +139,7 @@ internal class Program
             Console.WriteLine("Invalid. Enter a non‑negative decimal, or press Enter to keep.");
         }
 
-        int? newQty = null;
+        var newQty = (int?)null;
         while (true)
         {
             Console.Write($"New quantity [{product.Quantity}]: ");
@@ -153,15 +154,30 @@ internal class Program
             Console.WriteLine("Invalid. Enter a non‑negative integer, or press Enter to keep.");
         }
 
-        bool success = inventory.EditProduct(product, newName, newPrice, newQty, out var error);
-        Console.WriteLine(success ? "Product edited successfully." : $"Failed to edit product. {error}");
+        try
+        {
+            var editedProduct = inventory.EditProduct(product, newName, newPrice, newQty);
+            Console.WriteLine(
+                $"Product was edited successfully, new values are:\nName: {editedProduct.Name}, Price: {editedProduct.Price}, Quantity: {editedProduct.Quantity}");
+        }
+        catch (InventoryException ex)
+        {
+            Console.WriteLine($"Failed to edit product. {ex.Message}");
+        }
     }
 
     private static void DeleteProduct(Inventory inventory)
     {
         var name = ReadNonEmpty("Enter the product name to delete: ");
-        bool success = inventory.DeleteProduct(name, out var error);
-        Console.WriteLine(success ? "Product deleted successfully." : $"Failed to delete product. {error}");
+        try
+        {
+            inventory.DeleteProduct(name);
+            Console.WriteLine("Product deleted successfully.");
+        }
+        catch (InventoryException ex)
+        {
+            Console.WriteLine($"Failed to delete product. {ex.Message}");
+        }
     }
 
     private static void SearchProduct(Inventory inventory)

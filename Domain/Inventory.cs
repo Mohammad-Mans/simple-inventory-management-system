@@ -1,58 +1,50 @@
 namespace SimpleInventoryManagementSystem.Domain;
 
+public class InventoryException(string message) : Exception(message);
+
+public class InvalidProductException(string message) : InventoryException(message);
+
+public class ProductNameAlreadyExistsException(string name)
+    : InventoryException($"A product named '{name}' already exists.");
+
+public class ProductNotFoundException(string name) : InventoryException($"Product '{name}' was not found.");
+
 public class Inventory
 {
     private List<Product> _products = new();
 
-    private static bool ValidateProduct(string? name, decimal? price, int? quantity, out string? error)
+    private static void ValidateProduct(string? name, decimal? price, int? quantity)
     {
         if (name is not null && string.IsNullOrWhiteSpace(name))
-        {
-            error = "Name must be non-empty.";
-            return false;
-        }
+            throw new InvalidProductException("Name must be non-empty.");
 
         if (price is < 0)
-        {
-            error = "Price must be non-negative.";
-            return false;
-        }
+            throw new InvalidProductException("Price must be non-negative.");
 
         if (quantity is < 0)
-        {
-            error = "Quantity must be non-negative.";
-            return false;
-        }
-
-        error = null;
-        return true;
+            throw new InvalidProductException("Quantity must be non-negative.");
     }
 
-    private bool IsDuplicate(string name, Product? except = null)
+    private void EnsureNotDuplicate(string name, Product? except = null)
     {
         foreach (var p in _products)
         {
             if (except is not null && ReferenceEquals(p, except)) continue;
-            if (string.Equals(p.Name, name, StringComparison.OrdinalIgnoreCase)) return true;
+            if (string.Equals(p.Name, name, StringComparison.OrdinalIgnoreCase))
+                throw new ProductNameAlreadyExistsException(name);
         }
-
-        return false;
     }
-    
-    public bool AddProduct(string name, decimal price, int quantity, out string? error)
+
+    public Product AddProduct(string name, decimal price, int quantity)
     {
-        if (!ValidateProduct(name, price, quantity, out error)) return false;
+        ValidateProduct(name, price, quantity);
 
         var trimmed = name.Trim();
+        EnsureNotDuplicate(trimmed);
 
-        if (IsDuplicate(trimmed))
-        {
-            error = "A product with that name already exists.";
-            return false;
-        }
-
-        _products.Add(new Product(trimmed, price, quantity));
-        return true;
+        var product = new Product(trimmed, price, quantity);
+        _products.Add(product);
+        return product;
     }
 
     public IReadOnlyList<Product> GetProducts() => _products;
@@ -74,50 +66,44 @@ public class Inventory
         return false;
     }
 
-    public bool EditProduct(
+    public Product EditProduct(
         Product product,
         string? newName,
         decimal? newPrice,
-        int? newQuantity,
-        out string? error)
+        int? newQuantity)
     {
         var nameToValidate = string.IsNullOrWhiteSpace(newName) ? null : newName;
 
-        if (!ValidateProduct(nameToValidate, newPrice, newQuantity, out error)) return false;
+        ValidateProduct(nameToValidate, newPrice, newQuantity);
 
         if (!string.IsNullOrWhiteSpace(newName))
         {
             var trimmed = newName.Trim();
-            if (IsDuplicate(trimmed, product))
-            {
-                error = "Another product with that new name already exists.";
-                return false;
-            }
-
+            EnsureNotDuplicate(trimmed, product);
             product.Name = trimmed;
         }
 
         if (newPrice.HasValue) product.Price = newPrice.Value;
         if (newQuantity.HasValue) product.Quantity = newQuantity.Value;
 
-        return true;
+        return product;
     }
 
-    public bool DeleteProduct(string name, out string? error)
+    public void DeleteProduct(string name)
     {
-        if (!ValidateProduct(name, null, null, out error)) return false;
+        if (string.IsNullOrWhiteSpace(name))
+            throw new InvalidProductException("Name must be non-empty.");
 
-        for (int i = 0; i < _products.Count; i++)
+        for (var i = 0; i < _products.Count; i++)
         {
             var p = _products[i];
             if (string.Equals(p.Name, name, StringComparison.OrdinalIgnoreCase))
             {
                 _products.RemoveAt(i);
-                return true;
+                return;
             }
         }
 
-        error = "Product not found.";
-        return false;
+        throw new ProductNotFoundException(name);
     }
 }
