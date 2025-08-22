@@ -120,39 +120,9 @@ internal class Program
         Console.WriteLine($"Editing '{product!.Name}' (Price: {product.Price}, Quantity: {product.Quantity})");
         Console.WriteLine("Press Enter to keep the current value.");
 
-        Console.Write($"New name [{product.Name}]: ");
-        var nameInput = Console.ReadLine();
-        var newName = string.IsNullOrWhiteSpace(nameInput) ? null : nameInput.Trim();
-
-        var newPrice = (decimal?)null;
-        while (true)
-        {
-            Console.Write($"New price [{product.Price}]: ");
-            var s = Console.ReadLine();
-            if (string.IsNullOrWhiteSpace(s)) break;
-            if (decimal.TryParse(s, out var v) && v >= 0)
-            {
-                newPrice = v;
-                break;
-            }
-
-            Console.WriteLine("Invalid. Enter a non‑negative decimal, or press Enter to keep.");
-        }
-
-        var newQty = (int?)null;
-        while (true)
-        {
-            Console.Write($"New quantity [{product.Quantity}]: ");
-            var s = Console.ReadLine();
-            if (string.IsNullOrWhiteSpace(s)) break;
-            if (int.TryParse(s, out var v) && v >= 0)
-            {
-                newQty = v;
-                break;
-            }
-
-            Console.WriteLine("Invalid. Enter a non‑negative integer, or press Enter to keep.");
-        }
+        var newName = ReadOptionalName("New name", product.Name);
+        var newPrice = ReadOptionalNonNegativeDecimal("New price", product.Price);
+        var newQty = ReadOptionalNonNegativeInt("New quantity", product.Quantity);
 
         try
         {
@@ -203,6 +173,37 @@ internal class Program
             var s = Console.ReadLine() ?? "";
             if (!string.IsNullOrWhiteSpace(s)) return s.Trim();
             Console.WriteLine("Invalid input. Please enter a non-empty value.");
+        }
+    }
+
+    private static string? ReadOptionalName(string label, string current)
+    {
+        Console.Write($"{label} [{current}]: ");
+        var input = Console.ReadLine();
+        return string.IsNullOrWhiteSpace(input) ? null : input.Trim();
+    }
+
+    private static decimal? ReadOptionalNonNegativeDecimal(string label, decimal current)
+    {
+        while (true)
+        {
+            Console.Write($"{label} [{current}]: ");
+            var s = Console.ReadLine();
+            if (string.IsNullOrWhiteSpace(s)) return null;
+            if (decimal.TryParse(s, out var v) && v >= 0) return v;
+            Console.WriteLine("Invalid. Enter a non-negative decimal, or press Enter to keep.");
+        }
+    }
+
+    private static int? ReadOptionalNonNegativeInt(string label, int current)
+    {
+        while (true)
+        {
+            Console.Write($"{label} [{current}]: ");
+            var s = Console.ReadLine();
+            if (string.IsNullOrWhiteSpace(s)) return null;
+            if (int.TryParse(s, out var v) && v >= 0) return v;
+            Console.WriteLine("Invalid. Enter a non-negative integer, or press Enter to keep.");
         }
     }
 }
