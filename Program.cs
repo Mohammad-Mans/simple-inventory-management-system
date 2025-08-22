@@ -45,7 +45,7 @@ internal class Program
         }
     }
 
-    public static void PrintMenu()
+    private static void PrintMenu()
     {
         Console.WriteLine("--- Menu Options ---");
         Console.WriteLine("1) Add product");
@@ -56,7 +56,7 @@ internal class Program
         Console.WriteLine("0) Exit");
     }
 
-    public static void AddProduct(Inventory inventory)
+    private static void AddProduct(Inventory inventory)
     {
         var name = ReadNonEmpty("Enter product name: ");
 
@@ -93,7 +93,7 @@ internal class Program
     }
 
 
-    public static void ViewAllProducts(Inventory inventory)
+    private static void ViewAllProducts(Inventory inventory)
     {
         var items = inventory.GetProducts();
         if (items.Count == 0)
@@ -165,7 +165,7 @@ internal class Program
         }
     }
 
-    static string ReadNonEmpty(string prompt)
+    private static string ReadNonEmpty(string prompt)
     {
         while (true)
         {
