@@ -29,7 +29,7 @@ public class Inventory
     {
         foreach (var p in _products)
         {
-            if (except is not null && ReferenceEquals(p, except)) continue;
+            if (except is not null && p == except) continue;
             if (string.Equals(p.Name, name, StringComparison.OrdinalIgnoreCase))
                 throw new ProductNameAlreadyExistsException(name);
         }
