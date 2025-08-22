@@ -94,14 +94,13 @@ public class Inventory
         if (string.IsNullOrWhiteSpace(name))
             throw new InvalidProductException("Name must be non-empty.");
 
-        for (var i = 0; i < _products.Count; i++)
+        var product = _products
+            .FirstOrDefault(p => string.Equals(p.Name, name, StringComparison.OrdinalIgnoreCase));
+
+        if (product != null)
         {
-            var p = _products[i];
-            if (string.Equals(p.Name, name, StringComparison.OrdinalIgnoreCase))
-            {
-                _products.RemoveAt(i);
-                return;
-            }
+            _products.Remove(product);
+            return;
         }
 
         throw new ProductNotFoundException(name);
