@@ -1,13 +1,6 @@
+using SimpleInventoryManagementSystem.Domain.Exceptions;
+
 namespace SimpleInventoryManagementSystem.Domain;
-
-public class InventoryException(string message) : Exception(message);
-
-public class InvalidProductException(string message) : InventoryException(message);
-
-public class ProductNameAlreadyExistsException(string name)
-    : InventoryException($"A product named '{name}' already exists.");
-
-public class ProductNotFoundException(string name) : InventoryException($"Product '{name}' was not found.");
 
 public class Inventory
 {

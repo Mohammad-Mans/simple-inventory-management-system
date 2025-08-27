@@ -1,4 +1,5 @@
 ﻿using SimpleInventoryManagementSystem.Domain;
+using SimpleInventoryManagementSystem.Domain.Exceptions;
 
 internal class Program
 {
