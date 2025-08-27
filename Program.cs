@@ -1,7 +1,9 @@
 ﻿using SimpleInventoryManagementSystem.Domain;
 using SimpleInventoryManagementSystem.Domain.Exceptions;
 
-internal class Program
+namespace SimpleInventoryManagementSystem;
+
+internal static class Program
 {
     public static void Main()
     {
